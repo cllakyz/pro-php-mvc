@@ -1,0 +1,22 @@
+{
+    "name": "celal/prototurk_php_mvc",
+    "description": "MVC Framework",
+    "type": "framework",
+    "require": {
+        "vlucas/phpdotenv": "^5.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "Cakyuz\\": "./"
+        },
+        "files": [
+            "Core/helpers.php"
+        ]
+    },
+    "authors": [
+        {
+            "name": "Celal",
+            "email": "cllakyz@hotmail.com"
+        }
+    ]
+}
