@@ -10,8 +10,30 @@ namespace Cakyuz\App\Controllers;
  */
 class ArticlesController
 {
-    public function index()
+    /**
+     * @return string
+     */
+    public function index(): string
     {
-        return view('articles');
+        $articleModel = model('article');
+        $articles = $articleModel->getAll();
+
+        return view('articles', [
+            'articles' => $articles
+        ]);
+    }
+
+    /**
+     * @param string $url
+     * @return string
+     */
+    public function show(string $url): string
+    {
+        $articleModel = model('article');
+        $article = $articleModel->find($url);
+
+        return view('article-detail', [
+            'article' => $article
+        ]);
     }
 }

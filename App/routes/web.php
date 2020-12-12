@@ -17,5 +17,6 @@ Route::prefix('/admin')->group(function () {
 });
 
 Route::get('/articles', 'ArticlesController@index')->name('articles');
+Route::get('/articles/:url', 'ArticlesController@show')->name('articles.show');
 
 Route::redirect('/php-dersleri', '/php');
