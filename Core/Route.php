@@ -4,6 +4,8 @@
 namespace Cakyuz\Core;
 
 
+use Cakyuz\Core\Helpers\Redirect;
+
 /**
  * Class Route
  * @package Cakyuz\Core
@@ -50,23 +52,30 @@ class Route
         $method = self::getMethod();
 
         foreach (self::$routes[$method] as $path => $props) {
-            $callback = $props['callback'];
             foreach (self::$patterns as $key => $pattern) {
                 $path = preg_replace('#' . $key . '#', $pattern, $path);
             }
             $pattern = '#^' . $path . '$#';
-            if (preg_match($pattern, $url, $params)) {
-                array_shift($params);
-                self::$hasRoute = true;
 
-                if (is_callable($callback)) {
-                    echo call_user_func_array($callback, $params);
+            if (preg_match($pattern, $url, $params)) {
+                self::$hasRoute = true;
+                array_shift($params);
+
+                if (array_key_exists('redirect', $props)) {
+                    Redirect::to($props['redirect'], $props['status']);
                 }
-                elseif (is_string($callback)) {
-                    [$className, $methodName] = explode('@', $callback);
-                    $className = '\Cakyuz\App\Controllers\\' . $className;
-                    $controller = new $className();
-                    echo call_user_func_array([$controller, $methodName], $params);
+                else {
+                    $callback = $props['callback'];
+
+                    if (is_callable($callback)) {
+                        echo call_user_func_array($callback, $params);
+                    }
+                    elseif (is_string($callback)) {
+                        [$className, $methodName] = explode('@', $callback);
+                        $className = '\Cakyuz\App\Controllers\\' . $className;
+                        $controller = new $className();
+                        echo call_user_func_array([$controller, $methodName], $params);
+                    }
                 }
             }
         }
@@ -115,7 +124,7 @@ class Route
         $route = array_key_first(array_filter(self::$routes['get'], function ($route) use ($name) {
             return $route['name'] === $name;
         }));
-        return str_replace(array_keys($params), array_values($params), $route);
+        return str_replace(array_map(fn($key) => ':' . $key, array_keys($params)), array_values($params), $route);
     }
 
     /**
@@ -135,5 +144,27 @@ class Route
     {
         $closure();
         self::$prefix = '';
+    }
+
+    /**
+     * @param string $key
+     * @param string $pattern
+     */
+    public function where(string $key, string $pattern): void
+    {
+        self::$patterns[':' . $key] = '(' . $pattern . ')';
+    }
+
+    /**
+     * @param string $from
+     * @param string $to
+     * @param int $status
+     */
+    public static function redirect(string $from, string $to, int $status = 301): void
+    {
+        self::$routes['get'][$from] = [
+            'redirect' => $to,
+            'status' => $status,
+        ];
     }
 }
