@@ -122,9 +122,9 @@ class Route
     public static function url(string $name, array $params = []): string
     {
         $route = array_key_first(array_filter(self::$routes['get'], function ($route) use ($name) {
-            return $route['name'] === $name;
+            return isset($route['name']) && $route['name'] === $name;
         }));
-        return str_replace(array_map(fn($key) => ':' . $key, array_keys($params)), array_values($params), $route);
+        return getenv('SITE_URL') . str_replace(array_map(fn($key) => ':' . $key, array_keys($params)), array_values($params), $route);
     }
 
     /**

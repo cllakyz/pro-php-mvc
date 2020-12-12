@@ -15,6 +15,8 @@ class HomeController
      */
     public function index(): string
     {
-        return 'ana sayfa';
+        return view('index', [
+            'username' => 'celalakyuz'
+        ]);
     }
 }

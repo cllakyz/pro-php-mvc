@@ -1,7 +1,5 @@
 <?php
 
-use Cakyuz\Core\Route;
-
 /**
  * @param string $name
  * @param array $params
@@ -9,5 +7,15 @@ use Cakyuz\Core\Route;
  */
 function route(string $name, array $params = []): string
 {
-    return Route::url($name, $params);
+    return \Cakyuz\Core\Route::url($name, $params);
+}
+
+/**
+ * @param string $name
+ * @param array $data
+ * @return string
+ */
+function view(string $name, array $data = []): string
+{
+    return \Cakyuz\Core\View::show($name, $data);
 }
